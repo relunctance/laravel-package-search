@@ -1,3 +1,8 @@
+---
+name: laravel-package-search
+description: Real-time Laravel package search via Packagist API with local cache. Supports 22 scenes, quality scoring, and cross-references to laravel-docs-reader for official documentation.
+---
+
 # Laravel Package Search - Skill Specification
 
 ## Overview
@@ -11,12 +16,12 @@
 
 ## 1. Core Objectives
 
-- Quickly search Laravel ecosystem packages (Packagist, GitHub, official recommendations)
-- Automatically evaluate package quality and maintenance status
-- Provide installation commands and configuration examples
-- Support scene-based search (payment, auth, multi-tenancy, Excel, WeChat, etc.)
-- Offer Top 20 Laravel package rankings
-- Intelligently recommend the best-matched packages based on actual requirements
+- **Real-time Packagist API** — data never stale, always fresh
+- Local cache (1 hour TTL) — fast repeat queries
+- Score packages by: stars × downloads × activity × Laravel compatibility
+- Support **22 scene categories** including AI/LLM, rate-limit, Stripe, SMS
+- Cross-reference to **laravel-docs-reader** for official Laravel documentation
+- Provide install commands + config snippets
 
 ---
 
@@ -27,63 +32,58 @@
 | Scene | Chinese | Description |
 |-------|---------|-------------|
 | `auth` | 认证/权限 | Authentication, authorization, roles, permissions |
-| `payment` | 支付/订单 | Payment gateways, order management |
+| `payment` | 支付/订单 | Payment gateways, Stripe, Alipay, WeChat Pay |
 | `multitenancy` | 多租户 | Multi-tenant SaaS applications |
 | `excel` | Excel/导入导出 | Spreadsheet import/export, data processing |
 | `media` | 媒体/文件 | File uploads, media management, CDN |
-| `wechat` | 微信/短信/推送 | WeChat SDK, SMS, push notifications |
-| `queue` | 队列/任务 | Job queues, task scheduling, Laravel Horizon |
-| `admin` | 后台管理 | Admin panels, Filament, Voyager |
+| `wechat` | 微信 | WeChat SDK, Mini Program |
+| `queue` | 队列/任务 | Job queues, Laravel Horizon |
+| `admin` | 后台管理 | Admin panels, Filament |
 | `search` | 搜索/全文检索 | Full-text search, Algolia, Scout |
-| `logging` | 日志/审计 | Logging, audit trails, activity log |
-| `api` | API/SDK | REST API, GraphQL, API documentation |
-| `testing` | 测试 | Testing tools, Pest, PHPUnit |
-| `cache` | 缓存 | Caching, Redis, cache management |
-| `validation` | 验证 | Form validation, data validation rules |
-| `migration` | 数据库迁移 | Database migrations, schema management |
-| `ui` | 前端/UI | Frontend assets, Vue, React, Inertia |
-| `email` | 邮件 | Email services, notifications, Mailgun |
-| `storage` | 存储 | Cloud storage, S3, local disk |
-| `security` | 安全 | Security headers, CSRF, XSS protection |
-| `devtools` | 开发工具 | Debug, IDE integration, Laravel Debugbar |
+| `logging` | 日志/审计 | Logging, audit trails |
+| `api` | API/SDK | REST API, GraphQL, Sanctum |
+| `testing` | 测试 | Pest, PHPUnit |
+| `cache` | 缓存 | Redis, cache management |
+| `security` | 安全 | Security headers, CSRF |
+| `devtools` | 开发工具 | Debug, Telescope, Debugbar |
+| `email` | 邮件 | Mailgun, notifications |
+| `storage` | 存储 | S3, cloud storage |
+| `ui` | 前端/UI | Vue, React, Inertia, Breeze |
+| `ai` | AI/LLM集成 | OpenAI, LLM, chatbot |
+| `ratelimit` | 限流 | Rate limiting, throttle |
+| `stripe` | Stripe支付 | Stripe subscriptions & payments |
+| `sms` | 短信 | Twilio, SMS notifications |
 
 ---
 
 ## 3. Package Evaluation Criteria
 
-Each package is evaluated on:
+Each package is scored in real-time via Packagist API (live data):
 
-| Criterion | Weight | Description |
-|----------|--------|-------------|
-| GitHub Stars | 20% | Popularity indicator |
-| Packagist Downloads | 20% | Real-world usage |
-| Maintenance Activity | 25% | Last update, commit frequency |
-| Documentation | 15% | Completeness and clarity |
-| Laravel Compatibility | 10% | Version compatibility (10/11/12) |
-| Security | 10% | Known vulnerabilities, audit status |
+| Criterion | Weight | Source |
+|----------|--------|--------|
+| GitHub Stars | 15% | Packagist API (github_stars field) |
+| Packagist Downloads | 20% | Packagist API (downloads.total) |
+| Favorites | 10% | Packagist API (favers) |
+| Maintenance Activity | 30% | Last commit time (≤30d=100, ≤1y=40, >2y=0) |
+| Laravel Compatibility | 15% | composer.json require (10/11/12) |
+| Description Quality | 10% | Non-empty description = 100 |
 
-### Evaluation Formula
+### Real-time Scoring
 
 ```
-Score = (Stars/10000)*0.2 + (Downloads/100000)*0.2 + (ActivityScore)*0.25 + (DocScore)*0.15 + (CompatScore)*0.1 + (SecurityScore)*0.1
+Score = min(100, stars/500)*0.15 + min(100, log10(downloads)*15)*0.20
+      + min(100, favers/200)*0.10 + activityScore*0.30
+      + (hasLaravelVersion ? 100 : 0)*0.15 + (hasDescription ? 100 : 0)*0.10
 ```
 
-### Activity Score (0-100)
-
-| Condition | Score |
-|-----------|-------|
-| Updated < 1 month ago | 100 |
-| Updated < 3 months ago | 80 |
-| Updated < 6 months ago | 60 |
-| Updated < 1 year ago | 40 |
-| Updated < 2 years ago | 20 |
-| No updates > 2 years | 0 |
+> Data fetched live from Packagist API. Cached for 1 hour in `scripts/.cache.json`.
 
 ---
 
 ## 4. Top 20 Laravel Packages
 
-See `references/top20-packages.md`
+Run `php search.php top 20` for live rankings
 
 ---
 
@@ -156,7 +156,7 @@ Always verify: `composer show vendor/package --tree | grep laravel/framework`
 
 ## 8. CLI Tool (scripts/search.php)
 
-The skill includes a standalone CLI for agents or developers to query packages directly.
+Real-time Packagist API with local caching. No static data.
 
 ### Commands
 
@@ -166,68 +166,79 @@ php search.php <command> [args]
 
 | Command | Args | Description |
 |---------|------|-------------|
-| `search` | `<scene> [limit]` | Search by scene category |
-| `compare` | `<pkg1> <pkg2>` | Compare two packages side by side |
-| `compatible` | `<laravel-version>` | Show packages compatible with Laravel X |
-| `alternatives` | `<package>` | Find alternative packages in same scene |
-| `top` | `[limit]` | Show Top N packages (default 10) |
+| `search` | `<scene> [limit]` | Search by scene (auth, payment, ai...) |
+| `compare` | `<pkg1> <pkg2>` | Compare two packages |
 | `recommend` | `<requirement>` | Natural language recommendation |
-| `scenes` | — | List all 17 scene categories |
+| `top` | `[limit]` | Show Top N packages (default 10) |
+| `scenes` | — | List all 22 scene categories |
 
 ### Examples
 
 ```bash
-# Search auth packages
-php search.php search auth 3
+# Search AI packages
+php search.php search ai 3
 
-# Compare two permission packages
-php search.php compare spatie/laravel-permission tymon/jwt-auth
-
-# Laravel 11 compatible packages only
-php search.php compatible 11
-
-# Find alternatives to a package
-php search.php alternatives barryvdh/laravel-dompdf
+# Compare two auth packages
+php search.php compare spatie/laravel-permission laravel/sanctum
 
 # Natural language recommendation
 php search.php recommend "I need WeChat Pay for Laravel 11"
+php search.php recommend "I need AI chat for Laravel"
+php search.php recommend "I need rate limiting"
 
 # Top 20 packages
 php search.php top 20
 
-# All available scenes
+# All scenes
 php search.php scenes
+```
+
+### Caching
+
+```
+Cache file: scripts/.cache.json (auto-created)
+TTL: 1 hour
 ```
 
 ### Integration with OpenClaw Agent
 
-When the agent receives a package-related query, it invokes the corresponding CLI command and formats the output.
+When the agent receives a package query, it calls `php search.php` and formats the output.
+If the user asks about Laravel official docs, it cross-references `laravel-docs-reader` skill.
 
 ---
 
-## 9. Usage Examples
+## 8b. laravel-docs-reader Cross-Reference
 
-### Example 1: Auth & Permissions
+This skill automatically cross-references Laravel official documentation for known packages:
 
-**User**: "I need role-based access control for Laravel 11"
+```
+Package → Official Laravel Docs
+spatie/laravel-permission → Authorization docs
+laravel/scout → Database Search docs
+laravel/horizon → Queues docs
+laravel/telescope → Debugging docs
+laravel/sanctum → SPA Authentication docs
+laravel/cashier → Billing docs
+laravel/fortify → Authentication docs
+filament/filament → filamentphp.com/docs
+maatwebsite/excel → docs.laravel-excel.com
+```
 
-**Response**: See `references/examples/auth-permission.md`
+For packages not in the map, the output includes:
+```
+📖 Laravel Docs: Run `laravel-docs-reader` to search official docs for this package
+```
 
-### Example 2: Payment Integration
+### Workflow
 
-**User**: "I want to add WeChat Pay to my Laravel app"
-
-**Response**: See `references/examples/payment-wechat.md`
-
-### Example 3: Full-Text Search
-
-**User**: "Need search for my products"
-
-**Response**: See `references/examples/search-fulltext.md`
+1. User asks: "recommend a Laravel auth package"
+2. This skill returns ranked packages with install commands
+3. Output includes: `📖 Laravel Docs: Run laravel-docs-reader to search official docs`
+4. User can then ask: "search laravel-docs-reader for sanctum setup"
+5. laravel-docs-reader handles the official documentation query
 
 ---
 
-## 9. Skill Usage in OpenClaw
 
 ### Activation Keywords
 
@@ -263,14 +274,9 @@ When the agent receives a package-related query, it invokes the corresponding CL
 laravel-package-search/
 ├── SKILL.md                          # This file
 ├── references/
-│   ├── top20-packages.md             # Top 20 package rankings
-│   ├── scene-index.md                # Scene category index
-│   └── examples/
-│       ├── auth-permission.md
-│       ├── payment-wechat.md
-│       └── search-fulltext.md
+│   └── scene-index.md                # Scene category index
 └── scripts/
-    └── search.php                    # Optional CLI search script
+    └── search.php                    # Real-time Packagist CLI (v3)
 ```
 
 ---
