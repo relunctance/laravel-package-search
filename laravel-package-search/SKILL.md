@@ -154,7 +154,58 @@ Always verify: `composer show vendor/package --tree | grep laravel/framework`
 
 ---
 
-## 8. Usage Examples
+## 8. CLI Tool (scripts/search.php)
+
+The skill includes a standalone CLI for agents or developers to query packages directly.
+
+### Commands
+
+```bash
+php search.php <command> [args]
+```
+
+| Command | Args | Description |
+|---------|------|-------------|
+| `search` | `<scene> [limit]` | Search by scene category |
+| `compare` | `<pkg1> <pkg2>` | Compare two packages side by side |
+| `compatible` | `<laravel-version>` | Show packages compatible with Laravel X |
+| `alternatives` | `<package>` | Find alternative packages in same scene |
+| `top` | `[limit]` | Show Top N packages (default 10) |
+| `recommend` | `<requirement>` | Natural language recommendation |
+| `scenes` | — | List all 17 scene categories |
+
+### Examples
+
+```bash
+# Search auth packages
+php search.php search auth 3
+
+# Compare two permission packages
+php search.php compare spatie/laravel-permission tymon/jwt-auth
+
+# Laravel 11 compatible packages only
+php search.php compatible 11
+
+# Find alternatives to a package
+php search.php alternatives barryvdh/laravel-dompdf
+
+# Natural language recommendation
+php search.php recommend "I need WeChat Pay for Laravel 11"
+
+# Top 20 packages
+php search.php top 20
+
+# All available scenes
+php search.php scenes
+```
+
+### Integration with OpenClaw Agent
+
+When the agent receives a package-related query, it invokes the corresponding CLI command and formats the output.
+
+---
+
+## 9. Usage Examples
 
 ### Example 1: Auth & Permissions
 

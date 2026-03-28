@@ -28,6 +28,18 @@ Bot: [Automatically identifies scene: auth]
      [Returns ranked recommendations with install commands]
 ```
 
+### CLI Tool (7 commands)
+
+```bash
+php search.php search auth 3              # Search by scene
+php search.php compare pkg1 pkg2         # Compare packages
+php search.php compatible 11             # Laravel 11 compatible
+php search.php alternatives pkg           # Find alternatives
+php search.php top 20                   # Top 20 rankings
+php search.php recommend "your needs"   # Smart recommendation
+php search.php scenes                    # All scene categories
+```
+
 ### Supported Scenes
 
 | Code | Scene | Examples |
