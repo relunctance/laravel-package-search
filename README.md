@@ -6,117 +6,135 @@
 
 ## Overview
 
-**Laravel Package Search** is an OpenClaw Agent Skill that helps developers quickly find, evaluate, and recommend high quality Laravel ecosystem packages.
+**Laravel Package Search** is an OpenClaw Agent Skill that helps developers quickly find, evaluate, and recommend high-quality Laravel ecosystem packages.
 
-### Features
+[![Packagist](https://img.shields.io/packagist/v/laravel/framework?style=flat-square)](https://packagist.org/packages/laravel/framework)
+[![Stars](https://img.shields.io/github/stars/relunctance/laravel-package-search?style=flat-square)](https://github.com/relunctance/laravel-package-search)
+[![ClawHub](https://img.shields.io/badge/ClawHub-laravel--package--search-6C43E5?style=flat-square)](https://clawhub.com/laravel-package-search)
 
-- 🔍 **Scene-Based Search** — Find packages by business scenario (auth, payment, multi-tenancy, Excel, WeChat, etc.)
-- 🏆 **Top 20 Rankings** — Curated rankings by GitHub Stars, Packagist downloads, and maintenance activity
-- 🤖 **Smart Recommendations** — AI-powered matching based on your actual requirements
-- 📊 **Package Evaluation** — Automated scoring on GitHub Stars, docs, compatibility, and security
-- 📦 **Installation & Config** — Direct composer commands and code examples ready to copy
-- 🔄 **Laravel 10/11/12** — Automatic version compatibility checks
+---
 
-### Quick Start
+## Features
+
+- 🔍 **Real-time Packagist API** — data never stale, live on every query
+- 🗄️ **Local Cache (1h TTL)** — fast repeat queries
+- 🤖 **Smart Scene Detection** — find packages by business scenario (auth, payment, AI, etc.)
+- 📊 **Quality Scoring** — stars × downloads × activity × compatibility
+- 📖 **Laravel Docs Cross-Ref** — automatic links to official documentation (via [laravel-docs-reader](https://clawhub.com/laravel-docs-reader))
+- 📦 **Direct Install Commands** — `composer require` ready to copy
+
+---
+
+## Quick Start
 
 ```
 You: "I need a Laravel permission package for Laravel 11"
-Bot: [Automatically identifies scene: auth]
-     [Searches Top20 + scene database]
-     [Returns ranked recommendations with install commands]
+Bot: → Detects scene: auth
+     → Live Packagist search: laravel+auth
+     → Returns ranked packages with install commands + Packagist links
 ```
 
 ---
 
-## CLI Tool — 7 Commands
+## CLI Tool
 
 ```bash
-php search.php search auth 3              # Search by scene (auth/payment/excel/wechat...)
-php search.php compare pkg1 pkg2         # Compare two packages side by side
-php search.php compatible 11             # Laravel 11 compatible packages only
-php search.php alternatives pkg           # Find alternatives in the same scene
-php search.php top 20                    # Top 20 package rankings
-php search.php recommend "your needs"    # Natural language recommendation
-php search.php scenes                    # List all 17 scene categories
+php scripts/search.php search <scene> [limit]   # Search by scene (auth, payment, ai...)
+php scripts/search.php compare <pkg1> <pkg2>   # Compare two packages
+php scripts/search.php recommend <requirement>  # Natural language recommendation
+php scripts/search.php top [limit]             # Top N packages (default 10)
+php scripts/search.php scenes                  # List all 22 scenes
 ```
 
 ---
 
-## Supported Scenes
+## Supported Scenes (22)
 
-| Code | Scene | Top Package |
-|------|-------|------------|
-| `auth` | Authentication & RBAC | spatie/laravel-permission |
-| `payment` | Payment & Orders | yansongda/pay |
-| `multitenancy` | Multi-tenancy SaaS | stancl/tenancy |
-| `excel` | Excel Import/Export | maatwebsite/excel |
-| `media` | Media & Files | spatie/laravel-medialibrary |
-| `wechat` | WeChat / SMS / Push | overtrue/laravel-wechat |
-| `queue` | Queue & Jobs | laravel/horizon |
-| `admin` | Admin Panel | filament/filament |
-| `search` | Full-text Search | laravel/scout |
-| `logging` | Logging & Audit | spatie/laravel-activitylog |
-| `api` | API & SDK | guzzlehttp/guzzle |
-| `testing` | Testing | pestphp/pest |
-| `cache` | Caching | predis/predis |
-| `devtools` | Developer Tools | laravel/telescope |
+| Code | Scene | Packagist 搜索 | Top Package |
+|------|-------|---------------|-------------|
+| `auth` | Authentication & Authorization | [→](https://packagist.org/search?q=laravel+auth) | [spatie/laravel-permission](https://packagist.org/packages/spatie/laravel-permission) |
+| `payment` | Payment & Billing | [→](https://packagist.org/search?q=laravel+payment) | [yansongda/pay](https://packagist.org/packages/yansongda/pay) |
+| `search` | Full-text Search | [→](https://packagist.org/search?q=laravel+search+scout) | [laravel/scout](https://packagist.org/packages/laravel/scout) |
+| `admin` | Admin Panel | [→](https://packagist.org/search?q=laravel+admin+filament) | [filament/filament](https://packagist.org/packages/filament/filament) |
+| `queue` | Queue & Jobs | [→](https://packagist.org/search?q=laravel+queue+horizon) | [laravel/horizon](https://packagist.org/packages/laravel/horizon) |
+| `excel` | Excel Import/Export | [→](https://packagist.org/search?q=laravel+excel) | [maatwebsite/excel](https://packagist.org/packages/maatwebsite/excel) |
+| `media` | Media & Files | [→](https://packagist.org/search?q=laravel+media) | [spatie/laravel-medialibrary](https://packagist.org/packages/spatie/laravel-medialibrary) |
+| `wechat` | WeChat / Mini Program | [→](https://packagist.org/search?q=laravel+wechat) | [overtrue/laravel-wechat](https://packagist.org/packages/overtrue/laravel-wechat) |
+| `multitenancy` | Multi-tenancy SaaS | [→](https://packagist.org/search?q=laravel+multi-tenant) | [stancl/tenancy](https://packagist.org/packages/stancl/tenancy) |
+| `ai` | AI / LLM Integration | [→](https://packagist.org/search?q=laravel+openai+llm) | [openai-php/laravel](https://packagist.org/packages/openai-php/laravel) |
+| `ratelimit` | Rate Limiting | [→](https://packagist.org/search?q=laravel+rate+limit) | Laravel built-in |
+| `stripe` | Stripe Payments | [→](https://packagist.org/search?q=laravel+stripe) | [laravel/cashier](https://packagist.org/packages/laravel/cashier) |
+| `sms` | SMS Notifications | [→](https://packagist.org/search?q=laravel+sms) | [laravel/twilio](https://packagist.org/packages/laravel/twilio-notification-channel) |
+| `logging` | Logging & Audit | [→](https://packagist.org/search?q=laravel+log+activity) | [spatie/laravel-activitylog](https://packagist.org/packages/spatie/laravel-activitylog) |
+| `api` | API & HTTP | [→](https://packagist.org/search?q=laravel+api) | [laravel/sanctum](https://packagist.org/packages/laravel/sanctum) |
+| `testing` | Testing | [→](https://packagist.org/search?q=laravel+testing+pest) | [pestphp/pest](https://packagist.org/packages/pestphp/pest) |
+| `cache` | Caching | [→](https://packagist.org/search?q=laravel+redis+cache) | [predis/predis](https://packagist.org/packages/predis/predis) |
+| `email` | Email & Notifications | [→](https://packagist.org/search?q=laravel+mail) | [laravel/mail](https://packagist.org/packages/laravel/mail) |
+| `storage` | Cloud Storage | [→](https://packagist.org/search?q=laravel+storage+s3) | [league/flysystem-aws-s3-v3](https://packagist.org/packages/league/flysystem-aws-s3-v3) |
+| `security` | Security | [→](https://packagist.org/search?q=laravel+security) | Laravel built-in |
+| `ui` | Frontend UI | [→](https://packagist.org/search?q=laravel+ui+vue) | [laravel/breeze](https://packagist.org/packages/laravel/breeze) |
+| `devtools` | Developer Tools | [→](https://packagist.org/search?q=laravel+debug+telescope) | [laravel/telescope](https://packagist.org/packages/laravel/telescope) |
 
 ---
 
 ## Top 20 Packages
 
-| Rank | Package | Use Case | Score |
-|------|---------|----------|-------|
-| 1 | filament/filament | Admin Panel | 96/100 |
-| 2 | spatie/laravel-permission | RBAC Permissions | 95/100 |
-| 3 | laravel/horizon | Queue Monitoring | 95/100 |
-| 4 | laravel/telescope | Debugging | 94/100 |
-| 5 | stancl/tenancy | Multi-tenancy | 94/100 |
-| 6 | pestphp/pest | Testing | 93/100 |
-| 7 | laravel/scout | Full-text Search | 92/100 |
-| 8 | guzzlehttp/guzzle | HTTP Client | 92/100 |
-| 9 | spatie/laravel-activitylog | Activity Logging | 90/100 |
-| 10 | spatie/laravel-medialibrary | Media Management | 90/100 |
-| 11 | laravel/sanctum | SPA Token Auth | 90/100 |
-| 12 | spatie/laravel-backup | Database Backup | 88/100 |
-| 13 | barryvdh/laravel-dompdf | PDF Generation | 88/100 |
-| 14 | maatwebsite/excel | Excel Import/Export | 88/100 |
-| 15 | tymon/jwt-auth | JWT Auth | 88/100 |
-| 16 | socialiteproviders/manager | Social OAuth (50+) | 88/100 |
-| 17 | laravel/fortify | Headless Auth Backend | 86/100 |
-| 18 | predis/predis | Redis Client | 85/100 |
-| 19 | laravel/breeze | Minimal Auth Starter | 85/100 |
-| 20 | barryvdh/laravel-snappy | PDF (wkhtmltopdf) | 82/100 |
+| Rank | Package | Packagist | Stars | Use Case | Score |
+|------|---------|-----------|-------|----------|-------|
+| 1 | [filament/filament](https://packagist.org/packages/filament/filament) | [→](https://packagist.org/packages/filament/filament) | 25k | Admin Panel | 96 |
+| 2 | [spatie/laravel-permission](https://packagist.org/packages/spatie/laravel-permission) | [→](https://packagist.org/packages/spatie/laravel-permission) | 25k | RBAC | 95 |
+| 3 | [laravel/horizon](https://packagist.org/packages/laravel/horizon) | [→](https://packagist.org/packages/laravel/horizon) | 7k | Queue Monitor | 95 |
+| 4 | [laravel/telescope](https://packagist.org/packages/laravel/telescope) | [→](https://packagist.org/packages/laravel/telescope) | 12k | Debugging | 94 |
+| 5 | [stancl/tenancy](https://packagist.org/packages/stancl/tenancy) | [→](https://packagist.org/packages/stancl/tenancy) | 5k | Multi-tenancy | 94 |
+| 6 | [pestphp/pest](https://packagist.org/packages/pestphp/pest) | [→](https://packagist.org/packages/pestphp/pest) | 11k | Testing | 93 |
+| 7 | [laravel/scout](https://packagist.org/packages/laravel/scout) | [→](https://packagist.org/packages/laravel/scout) | 13k | Search | 92 |
+| 8 | [guzzlehttp/guzzle](https://packagist.org/packages/guzzlehttp/guzzle) | [→](https://packagist.org/packages/guzzlehttp/guzzle) | 25k | HTTP Client | 92 |
+| 9 | [spatie/laravel-activitylog](https://packagist.org/packages/spatie/laravel-activitylog) | [→](https://packagist.org/packages/spatie/laravel-activitylog) | 10k | Activity Log | 90 |
+| 10 | [spatie/laravel-medialibrary](https://packagist.org/packages/spatie/laravel-medialibrary) | [→](https://packagist.org/packages/spatie/laravel-medialibrary) | 10k | Media | 90 |
+| 11 | [laravel/sanctum](https://packagist.org/packages/laravel/sanctum) | [→](https://packagist.org/packages/laravel/sanctum) | 8k | SPA Auth | 90 |
+| 12 | [spatie/laravel-backup](https://packagist.org/packages/spatie/laravel-backup) | [→](https://packagist.org/packages/spatie/laravel-backup) | 12k | Backup | 88 |
+| 13 | [barryvdh/laravel-dompdf](https://packagist.org/packages/barryvdh/laravel-dompdf) | [→](https://packagist.org/packages/barryvdh/laravel-dompdf) | 12k | PDF | 88 |
+| 14 | [maatwebsite/excel](https://packagist.org/packages/maatwebsite/excel) | [→](https://packagist.org/packages/maatwebsite/excel) | 13k | Excel | 88 |
+| 15 | [tymon/jwt-auth](https://packagist.org/packages/tymon/jwt-auth) | [→](https://packagist.org/packages/tymon/jwt-auth) | 13k | JWT | 88 |
+| 16 | [socialiteproviders/manager](https://packagist.org/packages/socialiteproviders/manager) | [→](https://packagist.org/packages/socialiteproviders/manager) | 10k | Social OAuth | 88 |
+| 17 | [laravel/cashier](https://packagist.org/packages/laravel/cashier) | [→](https://packagist.org/packages/laravel/cashier) | 9k | Stripe Billing | 90 |
+| 18 | [predis/predis](https://packagist.org/packages/predis/predis) | [→](https://packagist.org/packages/predis/predis) | 12k | Redis | 85 |
+| 19 | [laravel/breeze](https://packagist.org/packages/laravel/breeze) | [→](https://packagist.org/packages/laravel/breeze) | 10k | Auth Starter | 85 |
+| 20 | [yansongda/pay](https://packagist.org/packages/yansongda/pay) | [→](https://packagist.org/packages/yansongda/pay) | 6k | Alipay/WeChat Pay | 88 |
 
-See `references/top20-packages.md` for the complete list.
+> Run `php scripts/search.php top 20` for **live** rankings with real-time Packagist data.
 
 ---
 
-## Usage in OpenClaw
+## Scoring
 
-When activated, this skill will:
+Packages are scored 0-100 in real-time:
 
-1. Parse your requirement (Chinese or English)
-2. Map it to the closest scene category
-3. Search the Top20 database and scene indexes
-4. Return Top 3 recommended packages with:
-   - Recommendation score
-   - Install command
-   - Configuration example
-   - Compatibility notes
-   - Alternatives
+| Criterion | Weight | Source |
+|-----------|--------|--------|
+| GitHub Stars | 15% | Packagist (github_stars) |
+| Packagist Downloads | 20% | Packagist API |
+| Favorites | 10% | Packagist (favers) |
+| Activity (≤30d=100) | 30% | Last commit |
+| Laravel Compatibility | 15% | composer.json |
+| Description Quality | 10% | Non-empty = 100 |
 
 ---
 
 ## Installation
 
-This is an OpenClaw Agent Skill.
-
 ```bash
-# Using ClawHub CLI
+# Install via ClawHub CLI
 clawhub install laravel-package-search
 
-# Or submit a request at https://clawhub.com
+# Or download from GitHub
+git clone https://github.com/relunctance/laravel-package-search.git
+cd laravel-package-search
+
+# Run CLI
+php scripts/search.php scenes
+php scripts/search.php search auth 3
+php scripts/search.php recommend "I need WeChat Pay for Laravel 11"
 ```
 
 ---
@@ -125,56 +143,41 @@ clawhub install laravel-package-search
 
 ```
 laravel-package-search/
-├── SKILL.md                          # Skill specification
-├── README.md                          # English version (this file)
-├── README.zh-CN.md                    # Chinese version
+├── SKILL.md                      # Skill specification
+├── README.md                     # English version
+├── README.zh-CN.md              # Chinese version
 ├── references/
-│   ├── top20-packages.md              # Full Top 20 rankings with details
-│   ├── scene-index.md                 # Scene category index
-│   └── examples/
-│       ├── auth-permission.md         # Auth & RBAC (Chinese)
-│       ├── payment-wechat.md          # Payment & WeChat (Chinese)
-│       └── search-fulltext.md         # Full-text search (Chinese)
+│   ├── top20-packages.md        # Full Top 20 with details
+│   └── scene-index.md           # All 22 scenes with Packagist links
 └── scripts/
-    └── search.php                    # CLI tool (7 commands)
+    └── search.php               # Real-time Packagist CLI
 ```
 
 ---
 
-## Evaluation Criteria
+## laravel-docs-reader Integration
 
-Packages are scored 0-100 based on:
+This skill cross-references [laravel-docs-reader](https://clawhub.com/laravel-docs-reader) for official Laravel documentation:
 
-| Criterion | Weight | Source |
-|-----------|--------|--------|
-| GitHub Stars | 20% | GitHub API |
-| Packagist Downloads | 20% | Packagist API |
-| Maintenance Activity | 25% | Last commit date |
-| Documentation | 15% | Manual review |
-| Laravel Compatibility | 10% | composer.json |
-| Security | 10% | Security advisories |
-
-### Activity Score (0-100)
-
-| Last Update | Score |
-|-------------|-------|
-| < 1 month ago | 100 |
-| < 3 months ago | 80 |
-| < 6 months ago | 60 |
-| < 1 year ago | 40 |
-| < 2 years ago | 20 |
-| > 2 years ago | 0 |
+```
+✅ spatie/laravel-permission → Authorization docs
+✅ laravel/scout → Database Search docs
+✅ laravel/horizon → Queues docs
+✅ laravel/sanctum → SPA Authentication docs
+✅ filament/filament → filamentphp.com/docs
+...
+```
 
 ---
 
 ## Contributing
 
 Found a missing package or outdated info?
-- Submit a PR at https://github.com/relunctance/laravel-package-search
-- Or open an issue
+- 🐛 [Open an Issue](https://github.com/relunctance/laravel-package-search/issues)
+- 🔧 [Submit a PR](https://github.com/relunctance/laravel-package-search/pulls)
 
 ---
 
 ## License
 
-MIT License
+MIT License | [GitHub](https://github.com/relunctance/laravel-package-search) | [ClawHub](https://clawhub.com/laravel-package-search)
